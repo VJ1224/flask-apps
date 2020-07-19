@@ -12,8 +12,10 @@
     <h1>Hello, {{name}}!</h1>
     <p>This is an API for a business database.</p>
     <h3>Employees</h3>
-    <p>To get all employees, navigate to {{url}}employees/all</p>
-    <p>To filter employees, navigate to {{url}}employees and use URL parameters to filter by id, name, city or country</p>
+    <p>To get all employees, send a GET request to {{url}}employees/all</p>
+    <p>To filter employees, send a GET request to {{url}}employees and use the id, name, city or country URL parameters.</p>
+    <p>To add an employee, send a POST request to {{url}}employees and use the name, city and country URL parameters.</p>
+    <p>To delete an employee, send a DELETE request to {{url}}employees and use the id URL parameter.</p>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
