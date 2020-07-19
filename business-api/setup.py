@@ -2,7 +2,7 @@
 import sqlite3
 
 
-def main():
+def setup():
     sql_connect = sqlite3.connect('business.db')
     cursor = sql_connect.cursor()
 
@@ -21,7 +21,3 @@ def main():
         print(e)
 
     sql_connect.close()
-
-
-if __name__ == '__main__':
-    main()
