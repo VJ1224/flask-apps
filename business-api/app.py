@@ -1,9 +1,7 @@
 from flask import Flask, request, render_template, jsonify, abort
 import sqlite3
-import setup
 
 app = Flask(__name__)
-setup.main()
 
 
 def dict_factory(cursor, row):
