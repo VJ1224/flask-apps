@@ -90,7 +90,7 @@ def employee_add():
 
     sql_connect.commit()
     sql_connect.close()
-    return jsonify(result)
+    return jsonify(result), 201
 
 
 @app.route('/employees', methods=["DELETE"])
