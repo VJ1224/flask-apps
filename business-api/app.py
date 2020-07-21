@@ -1,118 +1,92 @@
-from flask import Flask, request, render_template, jsonify, abort
-import sqlite3
+from flask import Flask, request, render_template, abort, jsonify
+from models import Employee, EmployeeSchema, db, ma
+import os
 
 app = Flask(__name__)
+basedir = os.path.abspath(os.path.dirname(__file__))
+dbpath = 'sqlite:///' + os.path.join(basedir, 'db.sqlite')
+
+app.config['SQLALCHEMY_DATABASE_URI'] = dbpath
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
+
+db.init_app(app)
+ma.init_app(app)
+
+employee_schema = EmployeeSchema()
+employees_schema = EmployeeSchema(many=True)
 
 
-def dict_factory(cursor, row):
-    d = {}
-    for idx, col in enumerate(cursor.description):
-        d[col[0]] = row[idx]
-    return d
-
-
+# Home
 @app.route('/')
 def home():
     name = request.args.get("name", "World")
     return render_template("index.html", name=name, url=request.url_root)
 
 
+# Get All Employees
 @app.route('/employees/all', methods=['GET'])
 def employees_all():
-    sql_connect = sqlite3.connect('business.db')
-    sql_connect.row_factory = dict_factory
-    cursor = sql_connect.cursor()
+    all_employees = Employee.query.all()
+    result = employees_schema.dump(all_employees)
 
-    query = "SELECT * FROM employees"
-    results = cursor.execute(query).fetchall()
-    sql_connect.close()
-
-    return jsonify(results)
+    return jsonify(result)
 
 
-@app.route('/employees', methods=['GET'])
-def employee_filter():
-    query_parameters = request.args
-    query = "SELECT * FROM employees WHERE"
-    id = query_parameters.get('id')
-    name = query_parameters.get('name')
-    city = query_parameters.get('city')
-    country = query_parameters.get('country')
-    to_filter = []
+# Get Employee by ID
+@app.route('/employees/<id>', methods=['GET'])
+def employee_get(id):
+    employee = Employee.query.get(id)
 
-    if id:
-        query += ' id=? AND'
-        to_filter.append(id)
-    if name:
-        query += ' name=? AND'
-        to_filter.append(name)
-    if city:
-        query += ' city=? AND'
-        to_filter.append(city)
-    if country:
-        query += ' country=? AND'
-        to_filter.append(country)
-    if not (id or name or city or country):
-        abort(404)
-
-    query = query[:-4] + ';'
-
-    sql_connect = sqlite3.connect('business.db')
-    sql_connect.row_factory = dict_factory
-    cursor = sql_connect.cursor()
-
-    results = cursor.execute(query, to_filter).fetchall()
-    sql_connect.close()
-
-    return jsonify(results)
+    return employee_schema.jsonify(employee)
 
 
+# Add Employee
 @app.route('/employees', methods=["POST"])
 def employee_add():
-    query_parameters = request.args
-    query = "INSERT INTO employees (name, city, country) VALUES (?, ?, ?);"
-    name = query_parameters.get('name')
-    city = query_parameters.get('city')
-    country = query_parameters.get('country')
-    data = (name, city, country)
-
-    if not (name or city or country):
+    try:
+        name = request.json['name']
+        city = request.json['city']
+        country = request.json['country']
+    except KeyError:
         abort(404)
 
-    sql_connect = sqlite3.connect('business.db')
-    sql_connect.row_factory = dict_factory
-    cursor = sql_connect.cursor()
-    cursor.execute(query, data)
+    new_employee = Employee(name, city, country)
 
-    id = cursor.lastrowid
-    query = "SELECT * FROM employees WHERE id=?"
-    result = cursor.execute(query, (id,)).fetchall()[0]
+    db.session.add(new_employee)
+    db.session.commit()
 
-    sql_connect.commit()
-    sql_connect.close()
-    return jsonify(result), 201
+    return employee_schema.jsonify(new_employee)
 
 
-@app.route('/employees', methods=["DELETE"])
-def employee_delete():
-    query = "SELECT * FROM employees WHERE id=?"
-    query_parameters = request.args
-    id = query_parameters.get('id')
-
-    if not (id):
+# Update Employee by ID
+@app.route('/employees/<id>', methods=["PUT"])
+def employee_update(id):
+    employee = Employee.query.get(id)
+    try:
+        name = request.json['name']
+        city = request.json['city']
+        country = request.json['country']
+    except KeyError:
         abort(404)
 
-    sql_connect = sqlite3.connect('business.db')
-    sql_connect.row_factory = dict_factory
-    cursor = sql_connect.cursor()
-    result = cursor.execute(query, (id,)).fetchall()[0]
+    employee.name = name
+    employee.city = city
+    employee.country = country
 
-    query = "DELETE FROM employees WHERE id=?"
-    cursor.execute(query, (id,))
+    db.session.commit()
 
-    sql_connect.commit()
-    sql_connect.close()
-    return jsonify(result)
+    return employee_schema.jsonify(employee)
+
+
+# Delete Employee by ID
+@app.route('/employees/<id>', methods=["DELETE"])
+def employee_delete(id):
+    employee = Employee.query.get(id)
+
+    db.session.delete(employee)
+    db.session.commit()
+
+    return employee_schema.jsonify(employee)
 
 
 @app.errorhandler(404)

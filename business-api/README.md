@@ -2,4 +2,6 @@
 
 API to access a business' database
 
-[Live](https://flask-business-api.herokuapp.com/)
+## Usage
+
+Visit the [website](https://flask-business-api.herokuapp.com/) for the documentation
