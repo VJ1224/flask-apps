@@ -1,12 +1,14 @@
 from flask import Flask, request, render_template, abort, jsonify
 from models import Employee, EmployeeSchema, db, ma
+from dotenv import load_dotenv
 import os
 
+
+load_dotenv()
 app = Flask(__name__)
 basedir = os.path.abspath(os.path.dirname(__file__))
-dbpath = 'sqlite:///' + os.path.join(basedir, 'db.sqlite3')
 
-app.config['SQLALCHEMY_DATABASE_URI'] = dbpath
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 
 db.init_app(app)
@@ -20,9 +22,10 @@ employees_schema = EmployeeSchema(many=True)
 def setup_database(app):
     with app.app_context():
         db.create_all()
-        employee = Employee("Vansh Jain", "Mumbai", "India")
-        db.session.add(employee)
-        db.session.commit()
+        if (not Employee.query.first()):
+            employee = Employee("Vansh Jain", "Mumbai", "India")
+            db.session.add(employee)
+            db.session.commit()
 
 
 # Home
@@ -110,6 +113,5 @@ def method_not_allowed(e):
 
 
 if __name__ == '__main__':
-    if not os.path.isfile('db.sqlite3'):
-        setup_database(app)
+    setup_database(app)
     app.run()
