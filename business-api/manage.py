@@ -2,7 +2,8 @@ import os
 from flask_script import Manager # noqa
 from flask_migrate import Migrate, MigrateCommand # noqa
 
-from app import app, db
+from app import app # noqa
+from models import db # noqa
 
 
 app.config.from_object(os.environ['APP_SETTINGS'])
