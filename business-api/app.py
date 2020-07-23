@@ -1,5 +1,5 @@
 from flask import Flask, request, render_template, abort, jsonify
-from models import Employee, EmployeeSchema, db, ma
+from models import Employee, EmployeeSchema, db, ma # noqa
 from dotenv import load_dotenv
 import os
 
