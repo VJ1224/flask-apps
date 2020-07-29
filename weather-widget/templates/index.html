@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Weather Widget</h1>
+<p>Use the search box to search for a city</p>
+
+<form onsubmit="searchCities(); return false;">      
+  <input class="form-control" type="text" placeholder="Search" aria-label="Search" id="search-box" autocomplete="off"> 
+</form>
+<div id="search-results" class="list-group mt-3"></div>
+
+<script>
+  function searchCities() {
+    city = document.getElementById('search-box').value;
+    const http = new XMLHttpRequest();
+    const host = window.location.host;
+    http.open("GET", "/cities?city=" + city);
+    http.send();
+
+    http.onload = () => {
+      var results = document.getElementById('search-results');
+      results.innerHTML = ''
+      var content = document.createElement('div');
+      content.innerHTML = http.responseText;
+      results.appendChild(content);
+    } 
+  }
+</script>
+{% endblock %}
