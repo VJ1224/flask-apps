@@ -22,10 +22,20 @@ pip install -r requirements.txt
 
 ## Usage
 
-Visit the [website](https://flask-business-api.herokuapp.com/) for the documentation
+Clone the directory
 
-## Deployment
+Create .env:
 
-Deployed using Heroku
+* Generate a SECRET_KEY
 
-[Live](https://flask-business-api.herokuapp.com/)
+* Add DATABASE_URL
+
+* Choose config and put in APP_SETTINGS
+
+Run server using:
+
+```python
+python app.py
+```
+
+Follow Flask link for API documentation
