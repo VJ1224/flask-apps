@@ -1,7 +1,9 @@
-from flask import Flask, request, render_template, abort, jsonify
-from models import Employee, EmployeeSchema, db, ma # noqa
-from dotenv import load_dotenv
+from flask import Flask, request, render_template, abort, jsonify # noqa
+from models import Employee, EmployeeSchema, APIAuth, db, ma # noqa
+from dotenv import load_dotenv # noqa
+from functools import wraps
 import os
+import uuid
 
 
 load_dotenv()
@@ -24,6 +26,43 @@ def setup_database(app):
             employee = Employee("Vansh Jain", "Mumbai", "India")
             db.session.add(employee)
             db.session.commit()
+
+
+# Generate API Keys
+def generate_api_key():
+    return str(uuid.uuid4())
+
+
+# Get matching API Key
+def get_api_key(key):
+    return APIAuth.query.get(key)
+
+
+# Verify API Key
+def verify_api_key(key):
+    if key is None:
+        return False
+
+    api_key = get_api_key(key)
+
+    if api_key is None:
+        return False
+    elif api_key.key == key:
+        return True
+
+    return False
+
+
+# Function Decorator to Require API Key
+def require_app_key(fn):
+    @wraps(fn)
+    def decorated(*args, **kwargs):
+        if verify_api_key(request.args.get('key')):
+            return fn(*args, **kwargs)
+        else:
+            abort(401)
+
+        return decorated
 
 
 # Home
@@ -99,11 +138,13 @@ def employee_delete(id):
     return employee_schema.jsonify(employee)
 
 
+# Custom 404 Page
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template("404.html")
 
 
+# Custom 405 Page
 @app.errorhandler(405)
 def method_not_allowed(e):
     allowed_methods = request.routing_exception.valid_methods

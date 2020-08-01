@@ -20,3 +20,10 @@ class Employee(db.Model):
 class EmployeeSchema(ma.Schema):
     class Meta:
         fields = ('id', 'name', 'city', 'country')
+
+
+class APIAuth(db.Model):
+    key = db.Column(db.String, primary_key=True)
+
+    def __init__(self, key):
+        self.key = key
