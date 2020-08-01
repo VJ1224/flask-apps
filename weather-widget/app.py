@@ -52,14 +52,30 @@ def cityWeather():
         if city.get("id") == cityID:
             name = city.get("name")
             country = city.get("country")
+            units = "metric"
             url = "http://api.openweathermap.org/data/2.5/weather"
+
             params = {"id": cityID,
                       "appid": weather_api_key,
-                      "units": "metric"
+                      "units": units
                       }
-            response = requests.get(url, params=params)
-            print(response.json())
-            return render_template("weather.html", city=name, country=country)
+            response = requests.get(url, params=params).json()
+
+            weather = response.get('weather')[0].get('main')
+            description = response.get('weather')[0].get('description')
+            icon = response.get('weather')[0].get('icon')
+            minimum = response.get('main').get('temp_min')
+            maximum = response.get('main').get('temp_min')
+            temp = response.get('main').get('temp')
+
+            if units == "metric":
+                un = '°C'
+
+            return render_template("weather.html", city=name, country=country,
+                                   weather=weather,
+                                   desc=description.capitalize(),
+                                   temp=temp, min=minimum,
+                                   max=maximum, unit=un, icon=icon)
 
     abort(404)
 

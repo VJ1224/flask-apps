@@ -1,4 +1,18 @@
 {% extends 'base.html' %}
 {% block content %}
-<h1>Weather in {{ city }}, {{ country }}</h1>
+<div class="card">
+    <h5 class="card-header">Weather in {{ city }}, {{ country }}</h5>
+    <div class="card-body">
+      <h5 class="card-title">{{ weather }}</h5>
+      <p class="card-text">
+        <img src="http://openweathermap.org/img/wn/{{ icon }}@2x.png" alt="Weather Icon">
+        {{ desc }}
+      </p>
+    </div>
+    <ul class="list-group list-group-flush">
+        <li class="list-group-item">Temperature: {{ temp }} {{ unit }}</li>
+        <li class="list-group-item">Min {{ min }} {{ unit }}</li>
+        <li class="list-group-item">Max {{ max }} {{ unit }}</li>
+    </ul>
+  </div>
 {% endblock %}
