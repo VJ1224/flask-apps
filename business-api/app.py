@@ -1,4 +1,5 @@
 from flask import Flask, request, render_template, abort, jsonify # noqa
+from flask_mail import Mail, Message # noqa
 from models import Employee, EmployeeSchema, APIAuth, db, ma # noqa
 from dotenv import load_dotenv # noqa
 from functools import wraps
@@ -8,11 +9,13 @@ import uuid
 
 load_dotenv()
 app = Flask(__name__)
+mail = Mail()
 app.config.from_object(os.environ['APP_SETTINGS'])
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
 ma.init_app(app)
+mail.init_app(app)
 
 employee_schema = EmployeeSchema()
 employees_schema = EmployeeSchema(many=True)
@@ -31,6 +34,14 @@ def setup_database(app):
 # Generate API Keys
 def generate_api_key():
     return str(uuid.uuid4())
+
+
+# Store API Key
+def store_api_key(key):
+    with app.app_context():
+        key = APIAuth(key)
+        db.session.add(key)
+        db.session.commit()
 
 
 # Get matching API Key
@@ -54,15 +65,15 @@ def verify_api_key(key):
 
 
 # Function Decorator to Require API Key
-def require_app_key(fn):
-    @wraps(fn)
+def require_api_key(view_function):
+    @wraps(view_function)
     def decorated(*args, **kwargs):
         if verify_api_key(request.args.get('key')):
-            return fn(*args, **kwargs)
+            return view_function(*args, **kwargs)
         else:
             abort(401)
 
-        return decorated
+    return decorated
 
 
 # Home
@@ -72,8 +83,25 @@ def home():
     return render_template("index.html", name=name, url=request.url_root)
 
 
+# Email API Key
+@app.route('/api_key', methods=["POST"])
+def mail_key():
+    key = generate_api_key()
+    store_api_key(key)
+
+    email = request.form.get('email')
+    print(email)
+
+    msg = Message("Your API Key", recipients=[email])
+    msg.body = "Here is your API Key: " + key
+
+    mail.send(msg)
+    return render_template("mail.html")
+
+
 # Get All Employees
 @app.route('/employees/all', methods=['GET'])
+@require_api_key
 def employees_all():
     all_employees = Employee.query.all()
     result = employees_schema.dump(all_employees)
@@ -83,6 +111,7 @@ def employees_all():
 
 # Get Employee by ID
 @app.route('/employees/<id>', methods=['GET'])
+@require_api_key
 def employee_get(id):
     employee = Employee.query.get(id)
 
@@ -91,6 +120,7 @@ def employee_get(id):
 
 # Add Employee
 @app.route('/employees', methods=["POST"])
+@require_api_key
 def employee_add():
     try:
         name = request.json['name']
@@ -109,6 +139,7 @@ def employee_add():
 
 # Update Employee by ID
 @app.route('/employees/<id>', methods=["PUT"])
+@require_api_key
 def employee_update(id):
     employee = Employee.query.get(id)
     try:
@@ -129,6 +160,7 @@ def employee_update(id):
 
 # Delete Employee by ID
 @app.route('/employees/<id>', methods=["DELETE"])
+@require_api_key
 def employee_delete(id):
     employee = Employee.query.get(id)
 
