@@ -1,12 +1,13 @@
-from flask import Flask, request, render_template, abort
-from dotenv import load_dotenv
+from flask import Flask, request, render_template, abort # noqa
+from dotenv import load_dotenv # noqa
 import os
 import json
-import requests
+import requests # noqa
 
 
 load_dotenv()
 weather_api_key = os.getenv('OPEN_WEATHER_KEY')
+maps_api_key = os.getenv('MAPS_API_KEY')
 app = Flask(__name__)
 app.config.from_object(os.environ['APP_SETTINGS'])
 
@@ -67,6 +68,8 @@ def cityWeather():
             minimum = response.get('main').get('temp_min')
             maximum = response.get('main').get('temp_min')
             temp = response.get('main').get('temp')
+            lat = response.get('coord').get('lat')
+            lon = response.get('coord').get('lon')
 
             if units == "metric":
                 un = '°C'
@@ -75,7 +78,8 @@ def cityWeather():
                                    weather=weather,
                                    desc=description.capitalize(),
                                    temp=temp, min=minimum,
-                                   max=maximum, unit=un, icon=icon)
+                                   max=maximum, unit=un, icon=icon,
+                                   lat=lat, lon=lon, map_key=maps_api_key)
 
     abort(404)
 

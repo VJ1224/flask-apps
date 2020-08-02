@@ -1,7 +1,9 @@
 {% extends 'base.html' %}
 {% block content %}
-<h1>Weather Widget</h1>
-<p>Use the search box to search for a city</p>
+<div class="text-center">
+  <h1>Weather Widget</h1>
+  <p>Use the search box to search for a city</p>
+</div>
 
 <form onsubmit="searchCities(); return false;">      
   <input class="form-control" type="text" placeholder="Search" aria-label="Search" id="search-box" autocomplete="off"> 
