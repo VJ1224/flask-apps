@@ -17,7 +17,7 @@
 <form action="/api_key" method="POST">
     <div class="form-group">
       <label for="email">Email Address</label>
-      <input name="email" type="email" class="form-control" id="email">
+      <input name="email" type="email" class="form-control" id="email" pattern="[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+" required>
     </div>
     <button type="submit" class="btn btn-primary">Submit</button>
 </form>
