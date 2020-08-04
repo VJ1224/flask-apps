@@ -2,6 +2,6 @@
 
 All the projects I have created using the Flask framework in Python
 
-## Business API
+## REST API
 
 ## Weather Widget

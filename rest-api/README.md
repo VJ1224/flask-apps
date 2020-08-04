@@ -1,6 +1,6 @@
-# Business API
+# REST API
 
-API to access a business' database
+API to access a database
 
 ## Built With
 
