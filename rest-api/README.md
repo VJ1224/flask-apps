@@ -1,6 +1,6 @@
 # REST API
 
-API to access a database
+CRUD API to access a database
 
 ## Built With
 
