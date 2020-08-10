@@ -24,7 +24,7 @@ def home():
 
 
 @app.route('/cities')
-def getCity():
+def get_city():
     search = request.args.get('city')
     search = search.lower().title()
 
@@ -47,7 +47,7 @@ def getCity():
 
 
 @app.route('/city')
-def cityWeather():
+def city_weather():
     cityID = int(request.args.get('id'))
     for city in cities:
         if city.get("id") == cityID:
