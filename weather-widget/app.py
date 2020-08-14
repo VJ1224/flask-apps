@@ -28,7 +28,7 @@ def get_city():
     search = request.args.get('city')
     search = search.lower().title()
 
-    if (search):
+    if search:
         results = []
 
         for city in cities:
@@ -49,6 +49,7 @@ def get_city():
 @app.route('/city')
 def city_weather():
     cityID = int(request.args.get('id'))
+
     for city in cities:
         if city.get("id") == cityID:
             name = city.get("name")

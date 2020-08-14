@@ -25,7 +25,7 @@ employees_schema = EmployeeSchema(many=True)
 def setup_database(app):
     with app.app_context():
         db.create_all()
-        if (not Employee.query.first()):
+        if not Employee.query.first():
             employee = Employee("Vansh Jain", "Mumbai", "India")
             db.session.add(employee)
             db.session.commit()
