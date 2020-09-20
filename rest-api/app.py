@@ -90,7 +90,6 @@ def mail_key():
     store_api_key(key)
 
     email = request.form.get('email')
-    print(email)
 
     msg = Message("Your API Key", recipients=[email])
     msg.body = "Here is your API Key: " + key

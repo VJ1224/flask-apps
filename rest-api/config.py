@@ -12,8 +12,8 @@ class Config(object):
     MAIL_PORT = 587
     MAIL_USE_TLS = True
     MAIL_USE_SSL = False
-    MAIL_USERNAME = "vanshjain1224@gmail.com"
-    MAIL_DEFAULT_SENDER = "vanshjain1224@gmail.com"
+    MAIL_USERNAME = os.environ['MAIL']
+    MAIL_DEFAULT_SENDER = os.environ['MAIL']
     MAIL_PASSWORD = os.environ['MAIL_PASSWORD']
 
 
