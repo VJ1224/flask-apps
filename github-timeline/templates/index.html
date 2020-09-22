@@ -1,4 +1,10 @@
 {% extends 'base.html' %}
 {% block content %}
-
+<form action="/timeline" method="GET">
+    <div class="form-group">
+        <label for="username">GitHub Username</label>
+        <input class="form-control col-md-4" name="username" type="text" id="username" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
 {% endblock %}

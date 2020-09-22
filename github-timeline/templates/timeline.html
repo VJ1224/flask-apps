@@ -3,17 +3,20 @@
 <link rel="stylesheet" href="{{url_for('static',filename='styles/timeline.css')}}">
 
 <ul class="timeline">
-	<!--
+	{% for repo in repos %}
 	<li>
+		{% if loop.index % 2 == 0 %}
 		<div class="direction-r">
+		{% else %}
+		<div class="direction-l">
+		{% endif %}
 			<div class="flag-wrapper">
-				<span class="flag">Repo Title</span>
-				<span class="time-wrapper"><span class="time">Last Commit</span></span>
+				<a href="{{ repo['url'] }}" class="flag">{{ repo['title'] }}</a>
+				<span class="time-wrapper"><span class="time">{{ repo['created'] }}</span></span>
 			</div>
-			<div class="desc">Maybe Desc</div>
+			<div class="desc">{{ repo['desc'] }}</div>
 		</div>
 	</li>
-	-->
+	{% endfor %}
 </ul>
-
 {% endblock %}
